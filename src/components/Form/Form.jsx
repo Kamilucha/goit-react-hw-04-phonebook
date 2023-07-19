@@ -1,74 +1,82 @@
 import PropTypes from 'prop-types'
-import { Component } from "react"
+import { useState } from "react"
 import shortid from "shortid"
 import { Input, Label, FormContainer, Button } from "./Form.styled"
 
 
-class Form extends Component{
-state = {
-    name: '',
-    number: ''
-}
+const Form = ({ onSubmit }) => {
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
 
-    nameInputId = shortid.generate()
-    telInputId = shortid.generate()
+    const nameInputId = shortid.generate();
+    const telInputId = shortid.generate();
 
- static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-}
 
-handleChange = e => {
-    const { name, value} = e.currentTarget
-    console.log(e.currentTarget.value)
-    this.setState({ [name]: value })
-}
-    
-handleSubmit = e => {
-    e.preventDefault();
-         
-    this.props.onSubmit(this.state)
+    const handleChange = e => {
+        const { name, value } = e.target
+        switch (name) {
+            case 'name':
+                setName(value)
+                break;
+            
+            case 'number':
+                setNumber(value)
+                break;
+        
+            default:
+                break;
+        }
+    };
 
-    this.reset()
-}   
-    
-reset = () => {
-    this.setState({
-    name: '',
-    number: ''})
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        onSubmit({ name, number })
+
+        reset()
+    };
+
+    const reset = () => {
+        setName('');
+        setNumber('');
     }
 
-    render() {
-           return (
-        <FormContainer onSubmit={this.handleSubmit}>
-            <Label htmlFor={this.nameInputId}> Name
+
+
+    return (
+        <FormContainer onSubmit={handleSubmit}>
+            <Label htmlFor={nameInputId}> Name
             <Input
                 type="text"
                 name="name"
-                pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+                pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                 title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                 required
-                value={this.state.name}
-                onChange={this.handleChange}
-                id={this.nameInputId}           />
+                value={name}
+                onChange={handleChange}
+                id={nameInputId}           />
 
                 </Label>
-                <Label htmlFor={this.telInputId}>
+                <Label htmlFor={telInputId}>
                     Number
             <Input
                 type="tel"
                 name="number"
-               pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+               pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
                 title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                 required
-                value={this.state.number}
-                onChange={this.handleChange}
-               id={this.telInputId } />
+                value={number}
+                onChange={handleChange}
+               id={telInputId } />
                 </Label>
             <Button type="submit">Add contact</Button>
      </FormContainer>
-)}
+) 
 }
 
+Form.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+}
 
 export default Form
 
